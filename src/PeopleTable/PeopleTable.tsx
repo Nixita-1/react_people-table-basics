@@ -3,12 +3,17 @@ import classNames from 'classnames';
 import { Person } from '../types';
 import { PersonLink } from './PersonLink';
 
+type ExtendedPerson = Person & {
+  motherObject: Person | null;
+  fatherObject: Person | null;
+};
+
 type Props = {
-  people: Person[];
+  people: ExtendedPerson[];
 };
 
 export const PeopleTable: React.FC<Props> = ({ people }) => {
-  const { personSlug } = useParams();
+  const { personSlug } = useParams<{ personSlug?: string }>();
 
   return (
     <table
@@ -32,11 +37,11 @@ export const PeopleTable: React.FC<Props> = ({ people }) => {
             sex,
             born,
             died,
-            mother,
-            father,
             motherName,
             fatherName,
             slug,
+            motherObject,
+            fatherObject,
           } = person;
 
           return (
@@ -54,10 +59,18 @@ export const PeopleTable: React.FC<Props> = ({ people }) => {
               <td>{born}</td>
               <td>{died}</td>
               <td>
-                {mother ? <PersonLink person={mother} /> : motherName || '-'}
+                {motherObject ? (
+                  <PersonLink person={motherObject} />
+                ) : (
+                  motherName || '-'
+                )}
               </td>
               <td>
-                {father ? <PersonLink person={father} /> : fatherName || '-'}
+                {fatherObject ? (
+                  <PersonLink person={fatherObject} />
+                ) : (
+                  fatherName || '-'
+                )}
               </td>
             </tr>
           );

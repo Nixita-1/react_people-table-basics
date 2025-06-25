@@ -4,8 +4,13 @@ import { getPeople } from '../api';
 import { Loader } from '../components/Loader';
 import { PeopleTable } from '../PeopleTable/PeopleTable';
 
+type ExtendedPerson = Person & {
+  motherObject: Person | null;
+  fatherObject: Person | null;
+};
+
 export const PeoplePage = () => {
-  const [people, setPeople] = useState<Person[]>([]);
+  const [people, setPeople] = useState<ExtendedPerson[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -16,8 +21,8 @@ export const PeoplePage = () => {
 
       const preparedPeople = peopleFromServer.map((person, _, arr) => ({
         ...person,
-        father: arr.find(innerPerson => innerPerson.name === person.fatherName),
-        mother: arr.find(innerPerson => innerPerson.name === person.motherName),
+        motherObject: arr.find(p => p.name === person.motherName) || null,
+        fatherObject: arr.find(p => p.name === person.fatherName) || null,
       }));
 
       setPeople(preparedPeople);
@@ -44,7 +49,7 @@ export const PeoplePage = () => {
             <p data-cy="noPeopleMessage">There are no people on the server</p>
           )}
 
-          {!isLoading && !errorMessage && people.length && (
+          {!isLoading && !errorMessage && people.length > 0 && (
             <PeopleTable people={people} />
           )}
 
